@@ -98,30 +98,39 @@ function UserValidation($conn, $email, $password) {
     return -2;
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["function"])) {
-    switch ($_POST["function"]) {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $response = null;
+    $request = json_decode($_POST["requestData"]);
+    switch ($request->function) {
         case "UserDataAlreadyExists":
         {
             $conn = ConnectionOpen($databaseServer, $databaseUsername, $databasePassword);
-            echo UserDataAlreadyExists($conn, $_POST["name"], $_POST["value"]);
+            $response["functionOutput"] = UserDataAlreadyExists($conn, $request->name, $request->value);
+            echo json_encode($response);
             ConnectionClose($conn);
             break;
         }
         case "AddNewUser":
         {
             $conn = ConnectionOpen($databaseServer, $databaseUsername, $databasePassword);
-            echo AddNewUser($conn, $_POST["username"], $_POST["password"], $_POST["email"]);
+            $response["functionOutput"] = AddNewUser($conn, $request->username, $request->password, $request->email);
+            echo json_encode($response);
             ConnectionClose($conn);
             break;
         }
         case "UserValidation":
         {
             $conn = ConnectionOpen($databaseServer, $databaseUsername, $databasePassword);
-            echo UserValidation($conn, $_POST["email"], $_POST["password"]);
+            $response["functionOutput"] = UserValidation($conn, $request->email, $request->password);
+            echo json_encode($response);
             ConnectionClose($conn);
             break;
         }
     }
-} else
-    echo "error wrong request";
+} else {
+    echo json_encode(array("error" => "error wrong request"));
+}
 //var_dump($_REQUEST);
+//    echo "<pre>";
+//    print_r($_POST);
+//    echo "</pre>";

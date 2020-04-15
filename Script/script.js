@@ -12,13 +12,14 @@ $(document).ready(function () {
             var errorContaner = $(this).next();
             if (username !== inputValue) {
                 username = inputValue;
-                $.post("php/database.php", {
-                        function: "UserDataAlreadyExists",
-                        name: inputID,
-                        value: username
-                    }, function (data) {
-                        // alert(data);
-                        if (data == -2) {
+                var requestData = JSON.stringify({
+                    function: "UserDataAlreadyExists",
+                    name: inputID,
+                    value: username
+                });
+                $.post("php/database.php", {"requestData": requestData}, function (data, status) {
+                        var responseData = JSON.parse(data);
+                        if (responseData.functionOutput == -2) {
                             inputElement.setCustomValidity(inputID + " Already Exists.");
                             errorContaner.html(inputID + " Already Exists.");
                         } else {
@@ -49,15 +50,16 @@ $(document).ready(function () {
     ///custom submit fuction.
     $("#form").on("submit", function () {
         if (formType === "log in") {
-            $.post("php/database.php", {
-                    function: "UserValidation",
-                    email: $("#email").val(),
-                    password: $("#password").val()
-                }, function (data) {
-                    // alert(data);
-                    if (data == 1) {
+            var requestData = JSON.stringify({
+                function: "UserValidation",
+                email: $("#email").val(),
+                password: $("#password").val()
+            });
+            $.post("php/database.php", {"requestData":requestData}, function (data) {
+                    var responseData = JSON.parse(data);
+                    if (responseData.functionOutput == 1) {
                         alert("Welcome!");
-                    } else if (data == -2) {
+                    } else if (responseData.functionOutput == -2) {
                         alert("wrong email or password");
                     } else {
                         alert(data);
@@ -65,13 +67,15 @@ $(document).ready(function () {
                 }
             );
         } else if (formType === "sign up") {
-            $.post("php/database.php", {
-                    function: "AddNewUser",
-                    username: $("#username").val(),
-                    password: $("#password").val(),
-                    email: $("#email").val()
-                }, function (data) {
-                    if (data == 1) {
+            var requestData = JSON.stringify({
+                function: "AddNewUser",
+                username: $("#username").val(),
+                password: $("#password").val(),
+                email: $("#email").val()
+            });
+            $.post("php/database.php", {"requestData":requestData}, function (data) {
+                    var responseData = JSON.parse(data);
+                    if (responseData.functionOutput == 1) {
                         alert("Done!");
                     } else {
                         alert(data);
